@@ -110,3 +110,22 @@ echo "[+] Collecting Handle Informations"
 
 handle.exe >> log.txt
 
+echo "[+] Collecting Excluded IPAddresses"
+
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\IpAddresses" >> log.txt
+
+echo "[+] Collecting Excluded Extensions"
+
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Extensions" >> log.txt
+
+echo "[+] Collecting Excluded Paths"
+
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths" >> log.txt
+
+echo "[+] Collecting Excluded Processes"
+
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Processes" >> log.txt
+
+echo "[+] Collecting Excluded Temporary Paths"
+
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\TemporaryPaths" >> log.txt
