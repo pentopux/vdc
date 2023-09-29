@@ -167,8 +167,9 @@ echo "[+] Getting PowerShell History"
 
 powershell.exe Get-History >> log.txt
 
+echo "[+] Boot Configuration"
 
-
+bdedit.exe >> log.txt
 
 echo "[+] Dumping Memory ..."
 echo "[+] Type 'y' if asked"
