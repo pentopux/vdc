@@ -34,6 +34,13 @@ if exist "pslist.exe" (
 	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/pslist.exe -OutFile pslist.exe
 )
 
+if exist "DumpIt.exe" (
+	echo "[+] DumpIt Already Installed"
+) else (
+	echo "[+] Installing DumpIt"
+	powershell.exe Invoke-WebRequest -Uri https://raw.githubusercontent.com/thimbleweed/All-In-USB/master/utilities/DumpIt/DumpIt.exe -OutFile DumpIt.exe
+)
+
 
 if exist "psloglist.exe" (
 	echo "[+] PsLogList Already Installed"
@@ -78,6 +85,9 @@ netstat -an >> log.txt
 netstat -r >> log.txt
 ipconfig /all >> log.txt
 
+echo "[+] ARP Cache History"
+
+arp -a >> log.txt
 
 echo "[+] Scheduled Tasks"
 
@@ -106,7 +116,7 @@ echo "[+] Collecting In Use DLLs"
 listdlls.exe >> log.txt
 
 
-echo "[+] Collecting Handle Informations"
+echo "[+] Listing Open Files"
 
 handle.exe >> log.txt
 
@@ -134,7 +144,22 @@ echo "[+] Collecting Startup Files"
 
 reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" >> log.txt
 
+echo "[+] System Information"
+
+systeminfo >> log.txt
 
 
+echo "[+] USB Device History"
+
+wmic path Win32_USBControllerDevice get Dependent, Antecedent >> log.txt
+
+echo "[+] Getting PowerShell History"
+
+powershell.exe Get-History >> log.txt
+
+
+echo "[+] Dumping Memory ..."
+echo "[+] Type 'y' if asked"
+DumpIt.exe
 
 
