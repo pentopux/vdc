@@ -171,9 +171,13 @@ echo "[+] Boot Configuration"
 
 bdedit.exe >> log.txt
 
-echo "[+] Saved Wireless Networks"
+echo "[+] Getting Saved Wireless Networks"
 
 netsh wlan show profiles >> log.txt
+
+echo "[+] Getting Installed Applications"
+
+powershell.exe Get-WmiObject -Class Win32_Product >> log.txt
 
 echo "[+] Dumping Memory ..."
 echo "[+] Type 'y' if asked"
