@@ -76,6 +76,16 @@ echo "[+] Collecting Time&Date"
 date /t >> log.txt
 time /t >> log.txt
 
+
+echo "[+] Machine Info"
+
+wmic os get caption >> log.txt
+wmic cpu get Name >> log.txt
+wmic path Win32_videoController get name >> log.txt
+wmic computersystem get totalphysicalmemory >> log.txt
+wmic csproduct get UUID >> log.txt
+echo %COMPUTERNAME% >> log.txt
+
 echo "[+] Clipboard Text"
 
 powershell.exe Get-ClipBoard >> log.txt
@@ -101,7 +111,7 @@ logonsessions.exe >> log.txt
 
 
 echo "[+] Collecting User&Logs Data"
-
+wmic useraccount list full >> log.txt
 psloggedon.exe >> log.txt
 pslist.exe /d /m /x >> log.txt
 psloglist.exe -x >> log.txt
@@ -156,6 +166,8 @@ wmic path Win32_USBControllerDevice get Dependent, Antecedent >> log.txt
 echo "[+] Getting PowerShell History"
 
 powershell.exe Get-History >> log.txt
+
+
 
 
 echo "[+] Dumping Memory ..."
