@@ -171,6 +171,10 @@ echo "[+] Boot Configuration"
 
 bdedit.exe >> log.txt
 
+echo "[+] Saved Wireless Networks"
+
+netsh wlan show profiles >> log.txt
+
 echo "[+] Dumping Memory ..."
 echo "[+] Type 'y' if asked"
 DumpIt.exe
