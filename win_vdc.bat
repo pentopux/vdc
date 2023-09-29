@@ -129,3 +129,12 @@ reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Pro
 echo "[+] Collecting Excluded Temporary Paths"
 
 reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\TemporaryPaths" >> log.txt
+
+echo "[+] Collecting Startup Files"
+
+reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" >> log.txt
+
+
+
+
+
