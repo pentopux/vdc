@@ -1,84 +1,33 @@
 @echo off
+setlocal enabledelayedexpansion
 
+REM Check Administrative privileges
 echo "[+] Checking Administrative privileges ..."
-
 net session >nul 2>&1
-
-if %errorLevel% == 0 (
-	echo Running as administrator
-) else (
-	echo Administrative privileges are needed
-	exit
+if %errorLevel% neq 0 (
+    echo Administrative privileges are needed
+    exit /b 1
 )
 
-echo "[+] Installing Necessery Files..."
-
-if exist "psloggedon.exe" (
-	echo "[+] PsLoggedOn Already Installed"
-) else (
-	echo "[+] Installing PsLoggedOn"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/PsLoggedon.exe -OutFile psloggedon.exe
+REM Install Necessary Files
+echo "[+] Installing Necessary Files..."
+set tools=("psloggedon.exe" "logonsessions.exe" "pslist.exe" "DumpIt.exe" "psloglist.exe" "psservice.exe" "listdlls.exe" "handle.exe")
+for %%i in %tools% do (
+    if not exist %%i (
+        echo "[+] Installing %%~nxi"
+        powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/%%~nxi -OutFile %%i
+    ) else (
+        echo "[+] %%~nxi Already Installed"
+    )
 )
 
-if exist "logonsessions.exe" (
-	echo "[+] LogonSessions Already Installed"
-) else (
-	echo "[+] Installing LogonSessions"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/logonsessions.exe -OutFile logonsessions.exe
-)
-
-if exist "pslist.exe" (
-	echo "[+] PsList Already Installed"
-) else (
-	echo "[+] Installing PsList"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/pslist.exe -OutFile pslist.exe
-)
-
-if exist "DumpIt.exe" (
-	echo "[+] DumpIt Already Installed"
-) else (
-	echo "[+] Installing DumpIt"
-	powershell.exe Invoke-WebRequest -Uri https://raw.githubusercontent.com/thimbleweed/All-In-USB/master/utilities/DumpIt/DumpIt.exe -OutFile DumpIt.exe
-)
-
-
-if exist "psloglist.exe" (
-	echo "[+] PsLogList Already Installed"
-) else (
-	echo "[+] Installing PsLogList"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/psloglist.exe -OutFile psloglist.exe
-)
-
-if exist "psservice.exe" (
-	echo "[+] PsService Already Installed"
-) else (
-	echo "[+] Installing PsService"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/PsService.exe -OutFile psservice.exe
-)
-
-if exist "listdlls.exe" (
-	echo "[+] ListDLLs Already Installed"
-) else (
-	echo "[+] Installing ListDLLs"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/listdlls.exe -OutFile listdlls.exe
-)
-
-
-if exist "handle.exe" (
-	echo "[+] Handle Already Installed"
-) else (
-	echo "[+] Installing Handle"
-	powershell.exe Invoke-WebRequest -Uri https://live.sysinternals.com/handle.exe -OutFile handle.exe
-)
-
-echo "[+] Collecting Time&Date"
-
+REM Collect Time & Date
+echo "[+] Collecting Time & Date" >> log.txt
 date /t >> log.txt
 time /t >> log.txt
 
-
-echo "[+] Machine Info"
-
+REM Collect Machine Info
+echo "[+] Machine Info" >> log.txt
 wmic os get caption >> log.txt
 wmic cpu get Name >> log.txt
 wmic path Win32_videoController get name >> log.txt
@@ -86,101 +35,87 @@ wmic computersystem get totalphysicalmemory >> log.txt
 wmic csproduct get UUID >> log.txt
 echo %COMPUTERNAME% >> log.txt
 
-echo "[+] Clipboard Text"
+REM Collect Clipboard Text
+echo "[+] Clipboard Text" >> log.txt
+powershell.exe Get-Clipboard >> log.txt
 
-powershell.exe Get-ClipBoard >> log.txt
-
-echo "[+] Collecting Network Data"
+REM Collect Network Data
+echo "[+] Collecting Network Data" >> log.txt
 netstat -an >> log.txt
 netstat -r >> log.txt
 ipconfig /all >> log.txt
 
-echo "[+] ARP Cache History"
-
+REM Collect ARP Cache History
+echo "[+] ARP Cache History" >> log.txt
 arp -a >> log.txt
 
-echo "[+] Scheduled Tasks"
-
+REM Collect Scheduled Tasks
+echo "[+] Scheduled Tasks" >> log.txt
 schtasks.exe >> log.txt
 
-echo "[+] Remote Logged In Users"
-
+REM Collect Remote Logged In Users
+echo "[+] Remote Logged In Users" >> log.txt
 net sessions >> log.txt
 logonsessions.exe >> log.txt
 
-
-
-echo "[+] Collecting User&Logs Data"
+REM Collect User & Logs Data
+echo "[+] Collecting User & Logs Data" >> log.txt
 wmic useraccount list full >> log.txt
 psloggedon.exe >> log.txt
 pslist.exe /d /m /x >> log.txt
 psloglist.exe -x >> log.txt
-PsService.exe >> log.txt
+psservice.exe >> log.txt
 net user >> log.txt
 net localgroup administrators >> log.txt
 net localgroup "Remote Management Users" >> log.txt
 
-
-echo "[+] Collecting In Use DLLs"
-
+REM Collect In Use DLLs
+echo "[+] Collecting In Use DLLs" >> log.txt
 listdlls.exe >> log.txt
 
-
-echo "[+] Listing Open Files"
-
+REM List Open Files
+echo "[+] Listing Open Files" >> log.txt
 handle.exe >> log.txt
 
-echo "[+] Collecting Excluded IPAddresses"
+REM Collect Excluded Registry Entries
+echo "[+] Collecting Excluded Registry Entries" >> log.txt
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions" >> log.txt
 
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\IpAddresses" >> log.txt
-
-echo "[+] Collecting Excluded Extensions"
-
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Extensions" >> log.txt
-
-echo "[+] Collecting Excluded Paths"
-
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths" >> log.txt
-
-echo "[+] Collecting Excluded Processes"
-
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\Processes" >> log.txt
-
-echo "[+] Collecting Excluded Temporary Paths"
-
-reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Defender\Exclusions\TemporaryPaths" >> log.txt
-
-echo "[+] Collecting Startup Files"
-
+REM Collect Startup Files
+echo "[+] Collecting Startup Files" >> log.txt
 reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" >> log.txt
 
-echo "[+] System Information"
-
+REM Collect System Information
+echo "[+] System Information" >> log.txt
 systeminfo >> log.txt
 
-
-echo "[+] USB Device History"
-
+REM Collect USB Device History
+echo "[+] USB Device History" >> log.txt
 wmic path Win32_USBControllerDevice get Dependent, Antecedent >> log.txt
 
-echo "[+] Getting PowerShell History"
-
+REM Collect PowerShell History
+echo "[+] Getting PowerShell History" >> log.txt
 powershell.exe Get-History >> log.txt
 
-echo "[+] Boot Configuration"
+REM Collect Boot Configuration
+echo "[+] Boot Configuration" >> log.txt
+bcdedit.exe >> log.txt
 
-bdedit.exe >> log.txt
-
-echo "[+] Getting Saved Wireless Networks"
-
+REM Collect Saved Wireless Networks
+echo "[+] Getting Saved Wireless Networks" >> log.txt
 netsh wlan show profiles >> log.txt
 
-echo "[+] Getting Installed Applications"
-
+REM Collect Installed Applications
+echo "[+] Getting Installed Applications" >> log.txt
 powershell.exe Get-WmiObject -Class Win32_Product >> log.txt
 
-echo "[+] Dumping Memory ..."
+REM Collect Security Events
+echo "[+] Collecting Security Events" >> log.txt
+wevtutil qe Security /c:1 /f:text >> log.txt
+
+REM Dump Memory
+echo "[+] Dumping Memory ..." >> log.txt
 echo "[+] Type 'y' if asked"
 DumpIt.exe
 
-
+endlocal
